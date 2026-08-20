@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#050914" />
+    <title data-i18n="meta.title">BODY NINJA | Tu cuerpo es la espada</title>
+  </head>
+  <body>
+    <main id="app" data-i18n="aria.gameArea" data-i18n-attr="aria-label">
+      <canvas id="game-canvas" aria-label="Área de juego Body Ninja"></canvas>
+      <video id="camera-view" autoplay muted playsinline></video>
+
+      <section id="menu-screen" class="screen active">
+        <div class="ambient-orbit orbit-one"></div>
+        <div class="ambient-orbit orbit-two"></div>
+        <div class="menu-copy">
+          <p class="eyebrow"><span class="eyebrow-dot"></span> <span data-i18n="menu.eyebrow">ARCADE DE SEGUIMIENTO CORPORAL</span></p>
+          <h1><span>BODY</span><strong>NINJA</strong></h1>
+          <p class="tagline" data-i18n="menu.tagline">TU CUERPO ES LA ESPADA</p>
+          <p class="intro" data-i18n="menu.intro">Mueve tus brazos. El filo nace en el codo y llega hasta la punta de tus dedos.</p>
+          <div class="menu-actions">
+            <button id="start-camera" class="button button-primary"><span data-i18n="menu.startCamera">INICIAR CON CÁMARA</span> <span aria-hidden="true">↗</span></button>
+            <button id="start-demo" class="button button-ghost" data-i18n="menu.demo">PROBAR DEMO DE MOVIMIENTO</button>
+          </div>
+          <div class="game-settings" data-i18n="aria.settings" data-i18n-attr="aria-label">
+            <label><span data-i18n="menu.players">JUGADORES</span><select id="player-count"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label>
+            <label><span data-i18n="menu.rounds">RONDAS</span><input id="round-count" type="number" min="1" max="99" step="1" value="1" inputmode="numeric" /></label>
+            <label><span data-i18n="menu.language">IDIOMA</span><select id="language-select"><option value="es" data-i18n="language.es">Español</option><option value="pt" data-i18n="language.pt">Português</option><option value="en" data-i18n="language.en">English</option></select></label>
+          </div>
+          <p class="settings-hint" data-i18n="menu.settingsHint">Mueve ambos brazos dentro del encuadre y corta con el antebrazo.</p>
+          <button id="how-to-play" class="text-button"><span data-i18n="menu.howToPlay">CÓMO JUGAR</span> <span aria-hidden="true">→</span></button>
+          <p class="privacy"><span>◉</span> <span data-i18n="menu.privacy">El procesamiento de cámara ocurre en este dispositivo.</span></p>
+          <p class="distance-tip"><span>↔</span> <span data-i18n="menu.distance">DISTANCIA RECOMENDADA · 1.5–2 m · deja brazos y hombros dentro del encuadre</span></p>
+          <p id="menu-status" class="menu-status" role="status"></p>
+        </div>
+        <div class="menu-slice-preview" aria-hidden="true">
+          <div class="preview-fruit preview-apple"></div>
+          <div class="preview-slash slash-a"></div>
+          <div class="preview-slash slash-b"></div>
+          <span class="preview-label"><span data-i18n="menu.move">MUEVE</span><br /><b data-i18n="menu.fast">RÁPIDO</b></span>
+        </div>
+      </section>
+
+      <section id="help-screen" class="screen">
+        <div class="help-card">
+          <button id="close-help" class="close-button" aria-label="Cerrar">×</button>
+          <p class="eyebrow"><span class="eyebrow-dot"></span> <span data-i18n="help.eyebrow">GUÍA RÁPIDA</span></p>
+          <h2 data-i18n="help.title">Tu cuerpo es el arma.</h2>
+          <div class="help-grid">
+            <div class="help-item"><span class="help-icon">✦</span><div><b data-i18n="help.slashTitle">CORTE</b><p data-i18n="help.slashBody">Corta moviendo el brazo con decisión. El filo cubre codo hasta dedo.</p></div></div>
+            <div class="help-item"><span class="help-icon">↔</span><div><b data-i18n="help.flowTitle">FLUJO</b><p data-i18n="help.flowBody">Encadena frutas sin tocar bombas para subir tu multiplicador.</p></div></div>
+            <div class="help-item"><span class="help-icon danger">!</span><div><b data-i18n="help.bombTitle">EVASIÓN</b><p data-i18n="help.bombBody">Las bombas castigan el contacto. Usa tu cuerpo, no solo las manos.</p></div></div>
+            <div class="help-item"><span class="help-icon">4</span><div><b data-i18n="help.partyTitle">MODO GRUPO</b><p data-i18n="help.partyBody">Configura hasta cuatro jugadores por turnos, uno después de otro.</p></div></div>
+            <div class="help-item"><span class="help-icon">◷</span><div><b data-i18n="help.roundsTitle">RONDAS</b><p data-i18n="help.roundsBody">Elige cuántas rondas jugar. Cada turno termina al perder todos sus corazones.</p></div></div>
+          </div>
+          <button id="help-ready" class="button button-primary"><span data-i18n="help.ready">ESTOY LISTO</span> <span aria-hidden="true">↗</span></button>
+        </div>
+      </section>
+
+      <section id="lost-screen" class="screen screen-overlay">
+        <div class="lost-card"><p class="eyebrow"><span class="eyebrow-dot danger-dot"></span> <span data-i18n="lost.eyebrow">SEGUIMIENTO INTERRUMPIDO</span></p><h2 data-i18n="lost.title">JUGADOR FUERA</h2><p data-i18n="lost.body">Vuelve a colocarte frente a la cámara para continuar.</p><div class="lost-ring"></div></div>
+      </section>
+
+      <section id="pause-screen" class="screen screen-overlay">
+        <div class="pause-card"><p class="eyebrow"><span class="eyebrow-dot"></span> <span data-i18n="pause.eyebrow">PARTIDA EN PAUSA</span></p><h2 data-i18n="pause.title">PAUSA</h2><p data-i18n="pause.body">La partida está detenida.</p><div class="pause-actions"><button id="resume-game" class="button button-primary"><span data-i18n="pause.resume">CONTINUAR</span> <span aria-hidden="true">↗</span></button><button id="mute-audio" class="button button-ghost"><span id="mute-audio-label" data-i18n="pause.mute">SILENCIAR</span></button><button id="pause-main-menu" class="button button-ghost" data-i18n="pause.mainMenu">VOLVER AL MENÚ</button></div></div>
+      </section>
+
+      <section id="gameover-screen" class="screen screen-overlay">
+        <div class="gameover-card"><p class="eyebrow"><span class="eyebrow-dot danger-dot"></span> <span data-i18n="gameover.eyebrow">PARTIDA TERMINADA</span></p><h2 data-i18n="gameover.title">FIN DE LA PARTIDA</h2><p class="gameover-score-label"><span data-i18n="gameover.score">PUNTUACIÓN FINAL</span> <b id="final-score">0</b></p><p class="gameover-best"><span data-i18n="gameover.bestCombo">MEJOR COMBO</span> <b id="final-combo">x0</b></p><div id="final-board" class="score-board" data-i18n="aria.finalBoard" data-i18n-attr="aria-label"></div><div class="gameover-actions"><button id="play-again" class="button button-primary"><span data-i18n="gameover.playAgain">JUGAR DE NUEVO</span> <span aria-hidden="true">↗</span></button><button id="main-menu" class="button button-ghost" data-i18n="gameover.mainMenu">MENÚ PRINCIPAL</button></div></div>
+      </section>
+      <section id="round-screen" class="screen screen-overlay">
+        <div class="round-card"><p class="eyebrow"><span class="eyebrow-dot"></span> <span data-i18n="round.eyebrow">RONDA TERMINADA</span></p><h2 id="round-title">RONDA 1</h2><div id="round-board" class="score-board" data-i18n="aria.roundBoard" data-i18n-attr="aria-label"></div><p class="round-next" data-i18n="round.hint">Pulsa para continuar cuando estén listos.</p><button id="next-round" class="button button-primary"><span data-i18n="round.next">SIGUIENTE RONDA</span> <span aria-hidden="true">↗</span></button></div>
+      </section>
+      <section id="turn-screen" class="screen screen-overlay">
+        <div class="round-card"><p class="eyebrow"><span class="eyebrow-dot"></span> <span data-i18n="turn.eyebrow">TURNO TERMINADO</span></p><h2 id="turn-title">JUGADOR 1</h2><div id="turn-board" class="score-board" data-i18n="aria.turnBoard" data-i18n-attr="aria-label"></div><p class="round-next" data-i18n="turn.hint">Entrega el espacio al siguiente jugador.</p><button id="next-turn" class="button button-primary"><span data-i18n="turn.next">SIGUIENTE JUGADOR</span> <span aria-hidden="true">↗</span></button></div>
+      </section>
+
+      <header id="hud" class="hud hidden">
+        <div class="hud-block lives-block"><span class="hud-label" data-i18n="hud.lives">CORAZONES</span><strong id="lives-value" aria-label="3 de 4 corazones"><span class="heart-icon active" aria-hidden="true">♥</span><span class="heart-icon active" aria-hidden="true">♥</span><span class="heart-icon active" aria-hidden="true">♥</span></strong></div>
+        <div class="hud-block score-block"><span class="hud-label" data-i18n="hud.score">PUNTUACIÓN</span><strong id="score-value">000000</strong></div>
+        <div class="hud-block combo-block"><span class="hud-label" data-i18n="hud.combo">COMBO</span><strong id="combo-value">x0</strong></div>
+        <div class="hud-center"><span id="active-player" data-i18n="hud.playerOne">JUGADOR 1</span><small id="level-name" data-i18n="levels.calm">CALMA</small><small id="level-value" data-i18n="hud.initialRoundLevel">RONDA 1/1 · NIVEL 1</small></div>
+        <div class="flow-meter"><div class="flow-top"><span data-i18n="hud.flow">FLUJO</span><b id="flow-value">0%</b></div><div class="flow-track"><i id="flow-fill"></i></div></div>
+      </header>
+      <div id="players-hud" class="players-hud" data-i18n="aria.playersBoard" data-i18n-attr="aria-label"></div>
+      <div id="runtime-badge" class="runtime-badge hidden"><span class="status-dot"></span><span id="runtime-label" data-i18n="runtime.cameraOnline">CÁMARA ACTIVA</span><span class="fps-inline">FPS <b id="fps-counter-value">--</b></span><kbd>D</kbd> <span data-i18n="runtime.debug">DEPURACIÓN</span></div>
+      <aside id="metrics-panel" class="metrics-panel hidden" data-i18n="aria.metrics" data-i18n-attr="aria-label">
+        <div class="metrics-heading"><span data-i18n="metrics.heading">MÉTRICAS EN VIVO</span><b id="metrics-source" data-i18n="metrics.source.worker">PROCESADOR</b></div>
+        <div class="metrics-grid">
+          <div><span data-i18n="metrics.fps">FPS</span><b id="metric-fps">--</b></div>
+          <div><span data-i18n="metrics.frame">CUADRO</span><b id="metric-frame">--</b></div>
+          <div><span data-i18n="metrics.track">SEGUIMIENTO</span><b id="metric-track">--</b></div>
+          <div><span data-i18n="metrics.infer">INFERENCIA</span><b id="metric-infer">--</b></div>
+          <div><span data-i18n="metrics.age">ANTIGÜEDAD</span><b id="metric-age">--</b></div>
+          <div><span data-i18n="metrics.players">JUGADORES</span><b id="metric-players">--</b></div>
+          <div><span data-i18n="metrics.finger">EXTENSIÓN</span><b id="metric-finger">--</b></div>
+          <div><span data-i18n="metrics.bladeLeft">FILO IZQ.</span><b id="metric-blade-left">--</b></div>
+          <div><span data-i18n="metrics.bladeRight">FILO DER.</span><b id="metric-blade-right">--</b></div>
+        </div>
+      </aside>
+      <div id="proximity-alert" class="proximity-alert" aria-live="polite">
+        <div class="proximity-alert-card"><span class="proximity-mark">↔</span><div><b data-i18n="proximity.title">ESTÁS DEMASIADO CERCA</b><small data-i18n="proximity.body">Aléjate hasta aproximadamente 1.5–2 m para que tus brazos entren completos en cámara.</small></div></div>
+      </div>
+      <div id="countdown-label" class="countdown-label hidden"></div>
+      <div id="calibration-label" class="calibration-label hidden"><span class="calibration-pulse"></span><b id="calibration-title" data-i18n="calibration.title">PONTE FRENTE A LA CÁMARA</b><small id="calibration-hint" data-i18n="calibration.hint">Encuadra hombros y manos</small></div>
+      <div id="toast" class="toast hidden"></div>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

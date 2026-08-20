@@ -323,7 +323,7 @@ export class Game {
     const activePlayer = this.getActivePlayer();
     const rareHeart = !isBomb && activePlayer && activePlayer.lives < MAX_LIVES && specialRoll < 0.008;
     const type = isBomb ? "bomb" : rareHeart ? "heart" : specialRoll < 0.022 ? "golden" : specialRoll < 0.05 ? "time" : randomItem(["apple", "orange", "kiwi", "strawberry"]);
-    const mobileFruitScale = this.mobileLayout ? clamp(this.height / 1100, 0.42, 0.60) : 1;
+    const mobileFruitScale = this.mobileLayout ? clamp(this.height / 1100, 0.42, 0.60) * 1.1 : 1;
     const mobileMotionScale = this.mobileLayout ? 0.68 : 1;
     const radius = randomBetween(34, 50) * mobileFruitScale;
     const x = randomBetween(radius + 20, this.width - radius - 20);
@@ -623,7 +623,14 @@ export class Game {
   }
 
   drawBomb(ctx, radius) {
-    ctx.shadowColor = "#ff416c"; ctx.shadowBlur = this.cameraMode ? 0 : 18; ctx.fillStyle = "#202a3a"; ctx.beginPath(); ctx.arc(0, 0, radius * .86, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0; ctx.strokeStyle = "#73869d"; ctx.lineWidth = 3; ctx.stroke(); ctx.fillStyle = "#ff496f"; ctx.beginPath(); ctx.arc(-radius * .28, -radius * .28, radius * .16, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = "#ffbe68"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0, -radius * .78); ctx.quadraticCurveTo(radius * .18, -radius * 1.12, radius * .38, -radius * .94); ctx.stroke(); ctx.fillStyle = "#ffdf77"; ctx.beginPath(); ctx.arc(radius * .39, -radius * .94, 4 + Math.sin(Date.now() * .015) * 2, 0, Math.PI * 2); ctx.fill();
+    const pulse = 1 + Math.sin(Date.now() * .012) * .08;
+    ctx.fillStyle = "rgba(255, 73, 111, .12)"; ctx.beginPath(); ctx.arc(0, 0, radius * 1.28 * pulse, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = `rgba(255, 73, 111, ${.52 + Math.sin(Date.now() * .012) * .16})`; ctx.lineWidth = Math.max(3, radius * .07); ctx.beginPath(); ctx.arc(0, 0, radius * 1.2 * pulse, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = "#ffcf77"; ctx.lineWidth = 2; ctx.setLineDash([Math.max(4, radius * .16), Math.max(3, radius * .11)]); ctx.beginPath(); ctx.arc(0, 0, radius * 1.04, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+    ctx.shadowColor = "#ff416c"; ctx.shadowBlur = this.cameraMode ? 0 : 18; ctx.fillStyle = "#111a25"; ctx.beginPath(); ctx.arc(0, 0, radius * .86, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0; ctx.strokeStyle = "#ff7185"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "#ff496f"; ctx.beginPath(); ctx.arc(-radius * .28, -radius * .28, radius * .16, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#ffe1e7"; ctx.font = `800 ${Math.max(12, radius * .62)}px Oxanium, sans-serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("!", 0, radius * .1);
+    ctx.strokeStyle = "#ffbe68"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0, -radius * .78); ctx.quadraticCurveTo(radius * .18, -radius * 1.12, radius * .38, -radius * .94); ctx.stroke(); ctx.fillStyle = "#ffdf77"; ctx.beginPath(); ctx.arc(radius * .39, -radius * .94, 4 + Math.sin(Date.now() * .015) * 2, 0, Math.PI * 2); ctx.fill();
   }
 
   drawFragments(ctx) {

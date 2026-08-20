@@ -143,6 +143,7 @@ h1 strong { color: #69e7ff; -webkit-text-stroke: 1px #9ff4ff; }
 @keyframes orbit-spin { to { transform: rotate(360deg); } }
 @keyframes pulse { 50% { transform: scale(1.35); box-shadow: 0 0 0 14px rgba(107, 230, 255, .03), 0 0 30px #6be6ff; } }
 @keyframes flow-pulse { to { opacity: .55; } }
+@media (max-width: 900px), (orientation: landscape) and (max-height: 600px) { .screen { overflow-x: hidden; } }
 @media (orientation: landscape) and (max-height: 600px) {
   .screen { align-items: flex-start; padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
   .button, select, input { touch-action: manipulation; }

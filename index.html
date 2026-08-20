@@ -85,20 +85,9 @@
       </header>
       <div id="players-hud" class="players-hud" data-i18n="aria.playersBoard" data-i18n-attr="aria-label"></div>
       <div id="runtime-badge" class="runtime-badge hidden"><span class="status-dot"></span><span id="runtime-label" data-i18n="runtime.cameraOnline">CÁMARA ACTIVA</span><span class="fps-inline">FPS <b id="fps-counter-value">--</b></span><kbd>D</kbd> <span data-i18n="runtime.debug">DEPURACIÓN</span></div>
-      <aside id="metrics-panel" class="metrics-panel hidden" data-i18n="aria.metrics" data-i18n-attr="aria-label">
-        <div class="metrics-heading"><span data-i18n="metrics.heading">MÉTRICAS EN VIVO</span><b id="metrics-source" data-i18n="metrics.source.worker">PROCESADOR</b></div>
-        <div class="metrics-grid">
-          <div><span data-i18n="metrics.fps">FPS</span><b id="metric-fps">--</b></div>
-          <div><span data-i18n="metrics.frame">CUADRO</span><b id="metric-frame">--</b></div>
-          <div><span data-i18n="metrics.track">SEGUIMIENTO</span><b id="metric-track">--</b></div>
-          <div><span data-i18n="metrics.infer">INFERENCIA</span><b id="metric-infer">--</b></div>
-          <div><span data-i18n="metrics.age">ANTIGÜEDAD</span><b id="metric-age">--</b></div>
-          <div><span data-i18n="metrics.players">JUGADORES</span><b id="metric-players">--</b></div>
-          <div><span data-i18n="metrics.finger">EXTENSIÓN</span><b id="metric-finger">--</b></div>
-          <div><span data-i18n="metrics.bladeLeft">FILO IZQ.</span><b id="metric-blade-left">--</b></div>
-          <div><span data-i18n="metrics.bladeRight">FILO DER.</span><b id="metric-blade-right">--</b></div>
-        </div>
-      </aside>
+      <div id="orientation-alert" class="orientation-alert" role="status" aria-live="polite">
+        <div class="orientation-alert-card"><span class="orientation-mark" aria-hidden="true">↔</span><div><b data-i18n="orientation.title">GIRA EL TELÉFONO</b><small data-i18n="orientation.body">Para jugar mejor, coloca el celular en formato horizontal.</small></div></div>
+      </div>
       <div id="proximity-alert" class="proximity-alert" aria-live="polite">
         <div class="proximity-alert-card"><span class="proximity-mark">↔</span><div><b data-i18n="proximity.title">ESTÁS DEMASIADO CERCA</b><small data-i18n="proximity.body">Aléjate hasta aproximadamente 1.5–2 m para que tus brazos entren completos en cámara.</small></div></div>
       </div>

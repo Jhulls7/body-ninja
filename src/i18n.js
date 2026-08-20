@@ -44,7 +44,7 @@ const translations = {
     pause: { eyebrow: "PARTIDA EN PAUSA", title: "PAUSA", body: "La partida está detenida.", resume: "CONTINUAR", mute: "SILENCIAR", unmute: "ACTIVAR SONIDO", mainMenu: "VOLVER AL MENÚ" },
     hud: { lives: "CORAZONES", score: "PUNTUACIÓN", combo: "COMBO", flow: "FLUJO", roundLevel: "RONDA {{round}}/{{rounds}} · NIVEL {{level}}", initialRoundLevel: "RONDA 1/1 · NIVEL 1", player: "JUGADOR {{number}}", playerOne: "JUGADOR 1" },
     runtime: { cameraOnline: "CÁMARA ACTIVA", demo: "DEMO DE MOVIMIENTO", debug: "DEPURACIÓN" },
-    metrics: { heading: "MÉTRICAS EN VIVO", fps: "FPS", frame: "CUADRO", track: "SEGUIMIENTO", infer: "INFERENCIA", age: "ANTIGÜEDAD", players: "JUGADORES", finger: "EXTENSIÓN", bladeLeft: "FILO IZQ.", bladeRight: "FILO DER.", source: { idle: "INACTIVO", simulation: "SIMULACIÓN", worker: "PROCESADOR", poseLite: "POSE LIGERA", main: "PRINCIPAL" } },
+    orientation: { title: "GIRA EL TELÉFONO", body: "Para jugar mejor, coloca el celular en formato horizontal." },
     proximity: { title: "ESTÁS DEMASIADO CERCA", body: "Aléjate hasta aproximadamente 1.5–2 m para que tus brazos entren completos en cámara." },
     calibration: { title: "PONTE FRENTE A LA CÁMARA", ready: "LISTO", readyHint: "Mantén hombros y brazos dentro del marco", hint: "Encuadra hombros y brazos para este turno" },
     board: { hearts: "♥ {{lives}} · x{{combo}}", out: "FUERA" },
@@ -53,7 +53,7 @@ const translations = {
     toast: { extraHeart: "CORAZÓN EXTRA", extraHeartShort: "+1 CORAZÓN", flowMode: "MODO FLUJO", flowComplete: "MODO FLUJO TERMINADO", bombHit: "BOMBA · QUEDAN {{lives}} {{heartWord}}", debugOn: "DEPURACIÓN ACTIVADA", debugOff: "DEPURACIÓN DESACTIVADA" },
     status: { requestingCamera: "Solicitando acceso a la cámara…", loadingTracking: "Cargando seguimiento corporal…", workerUnavailable: "Seguimiento alternativo activado.", workerInterrupted: "Reintentando seguimiento…", cameraOnline: "CÁMARA ACTIVA · SEGUIMIENTO LISTO", cameraPermission: "Permiso de cámara bloqueado. Puedes probar la demo de movimiento.", cameraUnavailable: "No se pudo iniciar la cámara. Prueba la demo de movimiento.", demoReady: "CÁMARA NO DISPONIBLE · DEMO LISTA" },
     language: { es: "Español", pt: "Português", en: "English" },
-    aria: { gameArea: "Área de juego Body Ninja", settings: "Configuración de partida", finalBoard: "Resultados finales", roundBoard: "Resultados de ronda", turnBoard: "Resultados del turno", playersBoard: "Marcadores de jugadores", metrics: "Métricas de rendimiento" }
+    aria: { gameArea: "Área de juego Body Ninja", settings: "Configuración de partida", finalBoard: "Resultados finales", roundBoard: "Resultados de ronda", turnBoard: "Resultados del turno", playersBoard: "Marcadores de jugadores" }
   },
   pt: {
     meta: { title: "BODY NINJA | Seu corpo é a espada" },
@@ -96,7 +96,7 @@ const translations = {
     pause: { eyebrow: "PARTIDA PAUSADA", title: "PAUSA", body: "A partida está parada.", resume: "CONTINUAR", mute: "SILENCIAR", unmute: "ATIVAR SOM", mainMenu: "VOLTAR AO MENU" },
     hud: { lives: "CORAÇÕES", score: "PONTUAÇÃO", combo: "COMBO", flow: "FLUXO", roundLevel: "RODADA {{round}}/{{rounds}} · NÍVEL {{level}}", initialRoundLevel: "RODADA 1/1 · NÍVEL 1", player: "JOGADOR {{number}}", playerOne: "JOGADOR 1" },
     runtime: { cameraOnline: "CÂMERA ATIVA", demo: "DEMO DE MOVIMENTO", debug: "DEPURAÇÃO" },
-    metrics: { heading: "MÉTRICAS AO VIVO", fps: "FPS", frame: "QUADRO", track: "RASTREAMENTO", infer: "INFERÊNCIA", age: "IDADE", players: "JOGADORES", finger: "EXTENSÃO", bladeLeft: "FIO ESQ.", bladeRight: "FIO DIR.", source: { idle: "INATIVO", simulation: "SIMULAÇÃO", worker: "PROCESSADOR", poseLite: "POSE LEVE", main: "PRINCIPAL" } },
+    orientation: { title: "GIRE O CELULAR", body: "Para jogar melhor, coloque o celular na horizontal." },
     proximity: { title: "VOCÊ ESTÁ MUITO PERTO", body: "Afaste-se até aproximadamente 1.5–2 m para que seus braços apareçam completos na câmera." },
     calibration: { title: "FIQUE DE FRENTE PARA A CÂMERA", ready: "PRONTO", readyHint: "Mantenha os ombros e os braços dentro do quadro", hint: "Enquadre os ombros e os braços para este turno" },
     board: { hearts: "♥ {{lives}} · x{{combo}}", out: "FORA" },
@@ -105,7 +105,7 @@ const translations = {
     toast: { extraHeart: "CORAÇÃO EXTRA", extraHeartShort: "+1 CORAÇÃO", flowMode: "MODO FLUXO", flowComplete: "MODO FLUXO ENCERRADO", bombHit: "BOMBA · RESTAM {{lives}} {{heartWord}}", debugOn: "DEPURAÇÃO ATIVADA", debugOff: "DEPURAÇÃO DESATIVADA" },
     status: { requestingCamera: "Solicitando acesso à câmera…", loadingTracking: "Carregando rastreamento corporal…", workerUnavailable: "Rastreamento alternativo ativado.", workerInterrupted: "Tentando o rastreamento novamente…", cameraOnline: "CÂMERA ATIVA · RASTREAMENTO PRONTO", cameraPermission: "A permissão da câmera foi bloqueada. Você pode testar a demo de movimento.", cameraUnavailable: "Não foi possível iniciar a câmera. Teste a demo de movimento.", demoReady: "CÂMERA INDISPONÍVEL · DEMO PRONTA" },
     language: { es: "Español", pt: "Português", en: "English" },
-    aria: { gameArea: "Área de jogo Body Ninja", settings: "Configuração da partida", finalBoard: "Resultados finais", roundBoard: "Resultados da rodada", turnBoard: "Resultados do turno", playersBoard: "Placar dos jogadores", metrics: "Métricas de desempenho" }
+    aria: { gameArea: "Área de jogo Body Ninja", settings: "Configuração da partida", finalBoard: "Resultados finais", roundBoard: "Resultados da rodada", turnBoard: "Resultados do turno", playersBoard: "Placar dos jogadores" }
   },
   en: {
     meta: { title: "BODY NINJA | Your body is the blade" },
@@ -148,7 +148,7 @@ const translations = {
     pause: { eyebrow: "GAME PAUSED", title: "PAUSE", body: "The game is paused.", resume: "RESUME", mute: "MUTE", unmute: "TURN SOUND ON", mainMenu: "BACK TO MENU" },
     hud: { lives: "HEARTS", score: "SCORE", combo: "COMBO", flow: "FLOW", roundLevel: "ROUND {{round}}/{{rounds}} · LEVEL {{level}}", initialRoundLevel: "ROUND 1/1 · LEVEL 1", player: "PLAYER {{number}}", playerOne: "PLAYER 1" },
     runtime: { cameraOnline: "CAMERA ONLINE", demo: "MOVEMENT DEMO", debug: "DEBUG" },
-    metrics: { heading: "LIVE METRICS", fps: "FPS", frame: "FRAME", track: "TRACK", infer: "INFER", age: "AGE", players: "PLAYERS", finger: "EXTENSION", bladeLeft: "BLADE L", bladeRight: "BLADE R", source: { idle: "IDLE", simulation: "SIMULATION", worker: "WORKER", poseLite: "POSE LITE", main: "MAIN" } },
+    orientation: { title: "TURN YOUR PHONE SIDEWAYS", body: "For a better experience, place your phone in landscape mode." },
     proximity: { title: "YOU ARE TOO CLOSE", body: "Step back to about 1.5–2 m so your arms fit fully in the camera." },
     calibration: { title: "FACE THE CAMERA", ready: "READY", readyHint: "Keep your shoulders and arms inside the frame", hint: "Frame your shoulders and arms for this turn" },
     board: { hearts: "♥ {{lives}} · x{{combo}}", out: "OUT" },
@@ -157,7 +157,7 @@ const translations = {
     toast: { extraHeart: "EXTRA HEART", extraHeartShort: "+1 HEART", flowMode: "FLOW MODE", flowComplete: "FLOW MODE COMPLETE", bombHit: "BOMB · {{lives}} {{heartWord}} LEFT", debugOn: "DEBUG ENABLED", debugOff: "DEBUG DISABLED" },
     status: { requestingCamera: "Requesting camera access…", loadingTracking: "Loading body tracking…", workerUnavailable: "Fallback tracking enabled.", workerInterrupted: "Retrying body tracking…", cameraOnline: "CAMERA ONLINE · TRACKING READY", cameraPermission: "Camera permission was blocked. You can try the movement demo.", cameraUnavailable: "Camera could not start. Try the movement demo.", demoReady: "CAMERA UNAVAILABLE · DEMO READY" },
     language: { es: "Español", pt: "Português", en: "English" },
-    aria: { gameArea: "Body Ninja game area", settings: "Game settings", finalBoard: "Final results", roundBoard: "Round results", turnBoard: "Turn results", playersBoard: "Player scoreboard", metrics: "Performance metrics" }
+    aria: { gameArea: "Body Ninja game area", settings: "Game settings", finalBoard: "Final results", roundBoard: "Round results", turnBoard: "Turn results", playersBoard: "Player scoreboard" }
   }
 };
 

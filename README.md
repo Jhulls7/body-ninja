@@ -13,7 +13,7 @@ Body Ninja es un juego arcade de cortes controlado con el cuerpo. Cada brazo se 
 5. Rondas configurables sin temporizador.
 6. Tres corazones por turno. Un corazón raro puede aparecer como fruta y se obtiene al cortarlo. La puntuación no entrega corazones.
 7. Menú de pausa con ESC, continuar, silenciar y volver al menú.
-8. Demo sin cámara, frutas, bombas, combos, Flow Mode, sonido y métricas de rendimiento.
+8. Demo sin cámara, frutas, bombas, combos, Flow Mode, sonido y contador de FPS en pantalla.
 
 ### Requisitos
 
@@ -56,7 +56,7 @@ npm run preview
 
 ### Rendimiento
 
-El seguimiento se ejecuta en un Worker cuando el navegador lo permite. Las métricas muestran FPS, tiempo de cuadro, frecuencia de seguimiento, inferencia, antigüedad del resultado y longitud del filo.
+El seguimiento se ejecuta en un Worker cuando el navegador lo permite. Durante la partida solo se muestra el contador de FPS para mantener la interfaz limpia y ligera.
 
 Pulsa `D` durante una partida para alternar la depuración visual.
 
@@ -92,7 +92,7 @@ Body Ninja é um jogo arcade de cortes controlado pelo corpo. Cada braço se tra
 5. Rodadas configuráveis sem cronômetro.
 6. Três corações por turno. Um coração raro pode aparecer como fruta e deve ser cortado para ser obtido. A pontuação não entrega corações.
 7. Menu de pausa com ESC, continuar, silenciar e voltar ao menu.
-8. Demo sem câmera, frutas, bombas, combos, Flow Mode, som e métricas de desempenho.
+8. Demo sem câmera, frutas, bombas, combos, Flow Mode, som e contador de FPS na tela.
 
 ### Requisitos
 
@@ -135,7 +135,7 @@ npm run preview
 
 ### Desempenho
 
-O rastreamento usa um Worker quando o navegador permite. As métricas mostram FPS, tempo do quadro, frequência de rastreamento, inferência, idade do resultado e comprimento do fio.
+O rastreamento usa um Worker quando o navegador permite. Durante a partida, apenas o contador de FPS é exibido para manter a interface limpa e leve.
 
 Pressione `D` durante uma partida para alternar a depuração visual.
 
@@ -171,7 +171,7 @@ Body Ninja is a body controlled arcade slicing game. Each arm becomes a visual s
 5. Configurable rounds with no game timer.
 6. Three hearts per turn. A rare heart can appear as fruit and must be sliced to collect it. Score never grants hearts.
 7. Pause menu with ESC, resume, mute and return to menu.
-8. Camera free demo, fruit, bombs, combos, Flow Mode, sound and performance metrics.
+8. Camera free demo, fruit, bombs, combos, Flow Mode, sound and an on-screen FPS counter.
 
 ### Requirements
 
@@ -214,7 +214,7 @@ npm run preview
 
 ### Performance
 
-Tracking runs in a Worker when the browser allows it. The metrics show FPS, frame time, tracking frequency, inference, result age and blade length.
+Tracking runs in a Worker when the browser allows it. During the game, only the FPS counter is shown to keep the interface clean and lightweight.
 
 Press `D` during a game to toggle visual debugging.
 

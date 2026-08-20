@@ -19,8 +19,8 @@ const toast = document.querySelector("#toast");
 const menuStatus = document.querySelector("#menu-status");
 const runtimeBadge = document.querySelector("#runtime-badge");
 const runtimeLabel = document.querySelector("#runtime-label");
+const orientationAlert = document.querySelector("#orientation-alert");
 const proximityAlert = document.querySelector("#proximity-alert");
-const metricsPanel = document.querySelector("#metrics-panel");
 const roundScreen = document.querySelector("#round-screen");
 const roundTitle = document.querySelector("#round-title");
 const roundBoard = document.querySelector("#round-board");
@@ -39,7 +39,7 @@ let viewport = { width: window.innerWidth, height: window.innerHeight, dpr: 1 };
 let debugMode = false;
 let lastTime = performance.now();
 let toastTimer = 0;
-const perf = { startedAt: performance.now(), frames: 0, fps: 0, frameMs: 0, lastUiAt: 0 };
+const perf = { startedAt: performance.now(), frames: 0, fps: 0, lastUiAt: 0 };
 let lastUiData = { state: "MENU" };
 let lastUiPaintAt = 0;
 let lastHudPaintAt = 0;
@@ -53,11 +53,8 @@ function resetPerformance() {
   perf.startedAt = performance.now();
   perf.frames = 0;
   perf.fps = 0;
-  perf.frameMs = 0;
   perf.lastUiAt = 0;
   document.querySelector("#fps-counter-value").textContent = "--";
-  document.querySelector("#metric-fps").textContent = "--";
-  document.querySelector("#metric-frame").textContent = "--";
 }
 
 const tracker = new PoseTracker({ onStatus: (message) => { menuStatus.textContent = message; runtimeLabel.textContent = message; } });
@@ -75,6 +72,22 @@ function resize() {
   canvas.style.height = `${viewport.height}px`;
   game.ctx.setTransform(viewport.dpr, 0, 0, viewport.dpr, 0, 0);
   game.resize(viewport.width, viewport.height);
+  updateOrientationHint();
+}
+
+function isMobileDevice() {
+  const userAgent = navigator.userAgent || "";
+  const mobileUserAgent = /Android|iPhone|iPad|iPod|Mobile|Tablet/i.test(userAgent);
+  const mobileHint = Boolean(navigator.userAgentData?.mobile);
+  const touchLayout = window.matchMedia("(pointer: coarse)").matches
+    && Math.max(window.innerWidth, window.innerHeight) <= 1024;
+  return mobileUserAgent || mobileHint || touchLayout;
+}
+
+function updateOrientationHint() {
+  if (!orientationAlert) return;
+  const shouldShow = isMobileDevice() && window.innerHeight > window.innerWidth;
+  orientationAlert.classList.toggle("active", shouldShow);
 }
 
 function renderLives(lives) {
@@ -129,7 +142,6 @@ function updateUi(data) {
   turnScreen.classList.toggle("active", state === "TURN_BREAK");
   hud.classList.toggle("hidden", ["MENU", "HELP"].includes(state));
   runtimeBadge.classList.toggle("hidden", state === "MENU" || state === "HELP" || state === "GAME_OVER" || state === "ROUND_BREAK" || state === "TURN_BREAK");
-  metricsPanel.classList.toggle("hidden", state === "MENU" || state === "HELP");
   playersHud.classList.toggle("hidden", state === "MENU" || state === "HELP" || state === "GAME_OVER" || state === "ROUND_BREAK" || state === "TURN_BREAK" || state === "PAUSED");
   setProximityWarning(Boolean(data.tooClose));
   calibrationLabel.classList.toggle("hidden", state !== "CALIBRATION");
@@ -175,11 +187,6 @@ function updateMuteButton(muted = !game.audio.enabled) {
   muteAudioButton.classList.toggle("is-muted", muted);
 }
 
-function translateMetricSource(source) {
-  const sourceKey = { IDLE: "idle", SIM: "simulation", WORKER: "worker", "POSE LITE": "poseLite", MAIN: "main" }[source];
-  return sourceKey ? t(`metrics.source.${sourceKey}`) : source;
-}
-
 function setProximityWarning(tooClose) {
   const shouldShow = tooClose && !tracker.simulation && game.state !== "MENU" && game.state !== "GAME_OVER";
   proximityAlert.classList.toggle("active", shouldShow);
@@ -200,30 +207,15 @@ function hideToast() {
   toast.classList.remove("toast-in");
 }
 
-function updatePerformance(now, dt, tracking) {
+function updatePerformance(now) {
   perf.frames += 1;
   const elapsed = now - perf.startedAt;
   if (elapsed < 250 || now - perf.lastUiAt < 180) return;
   perf.fps = (perf.frames / elapsed) * 1000;
-  perf.frameMs = (elapsed / perf.frames);
   perf.startedAt = now;
   perf.frames = 0;
   perf.lastUiAt = now;
-  const trackingMetrics = tracker.getMetrics();
-  const left = tracking.arms.left;
-  const right = tracking.arms.right;
-  const fingerText = `${left?.fingerLength ? Math.round(left.fingerLength) : "--"}/${right?.fingerLength ? Math.round(right.fingerLength) : "--"}`;
   document.querySelector("#fps-counter-value").textContent = Math.round(perf.fps);
-  document.querySelector("#metric-fps").textContent = Math.round(perf.fps);
-  document.querySelector("#metric-frame").textContent = `${perf.frameMs.toFixed(1)}ms`;
-  document.querySelector("#metric-track").textContent = trackingMetrics.trackingHz ? `${trackingMetrics.trackingHz.toFixed(0)}Hz` : "--";
-  document.querySelector("#metric-infer").textContent = trackingMetrics.inferenceMs ? `${trackingMetrics.inferenceMs.toFixed(1)}ms` : "--";
-  document.querySelector("#metric-age").textContent = trackingMetrics.lastResultAt === 0 ? "--" : `${Math.round(trackingMetrics.resultAgeMs)}ms`;
-  document.querySelector("#metric-players").textContent = tracking.playerCount ? `${tracking.playerCount}` : "--";
-  document.querySelector("#metric-finger").textContent = `${fingerText}px`;
-  document.querySelector("#metric-blade-left").textContent = left?.bladeLength ? `${Math.round(left.bladeLength)}px` : "--";
-  document.querySelector("#metric-blade-right").textContent = right?.bladeLength ? `${Math.round(right.bladeLength)}px` : "--";
-  document.querySelector("#metrics-source").textContent = translateMetricSource(trackingMetrics.source);
 }
 
 function getGameSettings() {
@@ -285,7 +277,7 @@ function loop(now) {
   const tracking = tracker.getState();
   game.lastTrackingBody = tracking.body;
   game.update(dt, tracking);
-  updatePerformance(now, dt, tracking);
+  updatePerformance(now);
   setProximityWarning(Boolean(tracking.body?.tooClose));
   game.render(now);
   if (game.state === "CALIBRATION") game.drawCalibration(game.ctx, tracking, game.calibrationTime / 1.1);
@@ -338,6 +330,7 @@ window.addEventListener("body-ninja-language-change", () => {
   updateUi(lastUiData);
 });
 window.addEventListener("resize", resize);
+window.addEventListener("orientationchange", updateOrientationHint);
 document.addEventListener("visibilitychange", () => {
   lastTime = performance.now();
   if (document.hidden && ["CALIBRATION", "COUNTDOWN", "PLAYING", "TRACKING_LOST"].includes(game.state)) game.pause();

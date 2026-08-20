@@ -6,6 +6,12 @@ const POSE_MODEL = "https://storage.googleapis.com/mediapipe-models/pose_landmar
 let poseLandmarker;
 
 async function createTracker(playerLimit = 1) {
+  // The main thread starts the same request too, which warms the HTTP cache
+  // before this worker is created. Keeping this fetch here also makes a cold
+  // browser session deterministic when the camera starts immediately.
+  const modelResponse = await fetch(POSE_MODEL, { mode: "cors", cache: "force-cache" });
+  if (!modelResponse.ok) throw new Error(`Vision model request failed (${modelResponse.status})`);
+  await modelResponse.arrayBuffer();
   const vision = await FilesetResolver.forVisionTasks(WASM_PATH);
   const numPoses = Math.max(1, Math.min(4, playerLimit));
   const options = (delegate) => ({

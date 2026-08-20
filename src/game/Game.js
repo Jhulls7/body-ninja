@@ -176,7 +176,10 @@ export class Game {
   }
 
   update(dt, tracking) {
-    const safeDt = Math.min(dt, 0.035);
+    // Render stalls can happen while a fallback vision model is initializing.
+    // Preserve real-time countdowns and fruit motion without accepting a huge
+    // jump after a hidden/background tab.
+    const safeDt = clamp(Number.isFinite(dt) ? dt : 0.016, 0, 0.25);
     if (this.state === "PAUSED") {
       this.publishHud();
       return;

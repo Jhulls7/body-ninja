@@ -41,6 +41,10 @@ let lastTime = performance.now();
 let toastTimer = 0;
 const perf = { startedAt: performance.now(), frames: 0, fps: 0, frameMs: 0, lastUiAt: 0 };
 let lastUiData = { state: "MENU" };
+let lastUiPaintAt = 0;
+let lastHudPaintAt = 0;
+let lastHudLives = null;
+let lastHudPlayer = null;
 
 translateDocument();
 languageSelect.value = getLanguage();
@@ -85,6 +89,13 @@ function renderLives(lives) {
 }
 
 function updateHud(data) {
+  const now = performance.now();
+  const livesChanged = data.lives !== lastHudLives;
+  const playerChanged = data.activePlayerIndex !== lastHudPlayer;
+  if (!livesChanged && !playerChanged && now - lastHudPaintAt < 100) return;
+  lastHudPaintAt = now;
+  lastHudLives = data.lives;
+  lastHudPlayer = data.activePlayerIndex;
   document.querySelector("#score-value").textContent = data.score;
   document.querySelector("#combo-value").textContent = `x${data.combo}`;
   renderLives(data.lives);
@@ -99,8 +110,16 @@ function updateHud(data) {
 
 function updateUi(data) {
   const { toast: toastMessage, ...uiData } = data;
-  lastUiData = uiData;
   const state = data.state;
+  const previousUiData = lastUiData;
+  const now = performance.now();
+  const urgent = state !== previousUiData.state
+    || toastMessage
+    || data.countdown !== previousUiData.countdown
+    || data.resumed;
+  lastUiData = uiData;
+  if (!urgent && now - lastUiPaintAt < 100) return;
+  lastUiPaintAt = now;
   menuScreen.classList.toggle("active", state === "MENU");
   helpScreen.classList.toggle("active", state === "HELP");
   lostScreen.classList.toggle("active", state === "TRACKING_LOST");
@@ -217,7 +236,9 @@ function getGameSettings() {
 
 function beginCameraGame() {
   const settings = getGameSettings();
-  tracker.setPlayerLimit(settings.playerCount);
+  // Players take turns, so only the active person needs to be tracked.
+  // Detecting four bodies here unnecessarily multiplies model inference cost.
+  tracker.setPlayerLimit(1);
   game.setCameraMode(true);
   game.start({ simulation: false, ...settings });
   resetPerformance();
@@ -228,7 +249,7 @@ async function startCamera() {
   button.disabled = true;
   menuStatus.textContent = t("status.loadingTracking");
   try {
-    await tracker.startCamera(video, { maxPlayers: getGameSettings().playerCount });
+    await tracker.startCamera(video, { maxPlayers: 1 });
     video.classList.add("visible", "camera-background");
     tracker.setSimulation(false);
     game.setCameraMode(true);
@@ -256,7 +277,9 @@ function startDemo() {
 }
 
 function loop(now) {
-  const dt = Math.min(0.04, (now - lastTime) / 1000 || 0.016);
+  // Keep game clocks close to real time after a slow inference frame. Game
+  // physics applies its own safety cap, while countdowns no longer crawl.
+  const dt = Math.min(0.25, Math.max(0, (now - lastTime) / 1000) || 0.016);
   lastTime = now;
   tracker.update(now, viewport.width, viewport.height, dt);
   const tracking = tracker.getState();
@@ -292,9 +315,9 @@ document.querySelector("#resume-game").addEventListener("click", () => game.resu
 muteAudioButton.addEventListener("click", () => game.toggleMute());
 document.querySelector("#play-again").addEventListener("click", () => {
   const settings = getGameSettings();
-  tracker.setPlayerLimit(settings.playerCount);
   if (!tracker.simulation && tracker.stream && video.srcObject) beginCameraGame();
   else {
+    tracker.setPlayerLimit(settings.playerCount);
     game.start({ simulation: true, ...settings });
     resetPerformance();
   }
@@ -315,6 +338,10 @@ window.addEventListener("body-ninja-language-change", () => {
   updateUi(lastUiData);
 });
 window.addEventListener("resize", resize);
+document.addEventListener("visibilitychange", () => {
+  lastTime = performance.now();
+  if (document.hidden && ["CALIBRATION", "COUNTDOWN", "PLAYING", "TRACKING_LOST"].includes(game.state)) game.pause();
+});
 window.addEventListener("keydown", (event) => {
   if (event.key.toLowerCase() === "d") {
     debugMode = !debugMode;

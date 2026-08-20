@@ -8,6 +8,30 @@ const TRACKING_FRAME_WIDTH = 640;
 const TRACKING_FRAME_HEIGHT = 360;
 const MAX_PLAYERS = 4;
 
+let visionPreloadPromise;
+
+function preloadVisionAssets() {
+  if (!visionPreloadPromise) {
+    visionPreloadPromise = Promise.allSettled([
+      FilesetResolver.forVisionTasks(WASM_PATH),
+      fetch(POSE_MODEL, { mode: "cors", cache: "force-cache" }).then(async (response) => {
+        if (!response.ok) throw new Error(`Vision model request failed (${response.status})`);
+        await response.arrayBuffer();
+      }),
+    ]).then(([visionResult, modelResult]) => ({
+      vision: visionResult.status === "fulfilled" ? visionResult.value : null,
+      error: visionResult.status === "rejected"
+        ? visionResult.reason
+        : modelResult.status === "rejected" ? modelResult.reason : null,
+    }));
+  }
+  return visionPreloadPromise;
+}
+
+// Warm the browser cache as soon as the application loads. Starting this work
+// before the camera button is pressed avoids a cold model download during play.
+preloadVisionAssets();
+
 const POSE_INDEX = {
   left: { shoulder: 11, elbow: 13, wrist: 15 },
   right: { shoulder: 12, elbow: 14, wrist: 16 },
@@ -46,11 +70,17 @@ export class PoseTracker {
     this.workerFrameWidth = 0;
     this.workerFrameHeight = 0;
     this.workerFrameDt = 0.016;
+    this.mainFrameCanvas = document.createElement("canvas");
+    this.mainFrameCanvas.width = TRACKING_FRAME_WIDTH;
+    this.mainFrameCanvas.height = TRACKING_FRAME_HEIGHT;
+    this.mainFrameContext = this.mainFrameCanvas.getContext("2d", { alpha: false, desynchronized: true });
     this.playerLimit = 1;
     this.inferenceStartedAt = 0;
     this.lastResultAt = 0;
     this.lastResultTimestamp = 0;
-    this.metrics = { source: "IDLE", inferenceMs: 0, trackingHz: 0, resultAgeMs: 0 };
+    this.metrics = { source: "IDLE", inferenceMs: 0, trackingHz: 0, resultAgeMs: 0, workerError: "" };
+    this.preloadedVision = null;
+    this.workerError = "";
     this.simulation = false;
     this.pointer = { x: 0.5, y: 0.5 };
     this.smoothed = {};
@@ -76,11 +106,14 @@ export class PoseTracker {
     this.lastVideoTime = -1;
     this.lastInference = 0;
     this.lastResultAt = 0;
-    this.metrics = { source: "IDLE", inferenceMs: 0, trackingHz: 0, resultAgeMs: 0 };
+    this.metrics = { source: "IDLE", inferenceMs: 0, trackingHz: 0, resultAgeMs: 0, workerError: "" };
+    this.workerError = "";
     this.state = this.blankState();
     this.onStatus(t("status.requestingCamera"));
     const streamPromise = navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user", width: { ideal: 960, max: 960 }, height: { ideal: 540, max: 540 }, frameRate: { ideal: 30, max: 30 } },
+      // The tracker consumes a 640x360 frame. Capturing at that size avoids
+      // an unnecessary full-resolution copy before every inference.
+      video: { facingMode: "user", width: { ideal: 640, max: 640 }, height: { ideal: 360, max: 360 }, frameRate: { ideal: 30, max: 30 } },
       audio: false,
     });
     let timeoutHandle;
@@ -98,15 +131,22 @@ export class PoseTracker {
     video.srcObject = this.stream;
     await video.play();
     this.onStatus(t("status.loadingTracking"));
+    const preload = await preloadVisionAssets();
+    this.preloadedVision = preload.vision;
+    if (preload.error) console.warn("[Body Ninja] Vision asset preload did not finish cleanly.", preload.error);
     this.workerMode = false;
     this.lightMode = false;
     try {
       await this.startWorker();
       this.workerMode = true;
+      this.metrics.source = "WORKER";
     } catch (workerError) {
       this.worker?.terminate();
       this.worker = null;
       this.lightMode = true;
+      this.workerError = workerError?.message || "Worker initialization failed";
+      this.metrics.workerError = this.workerError;
+      console.warn("[Body Ninja] Tracking Worker unavailable; using downscaled fallback.", workerError);
       this.onStatus(t("status.workerUnavailable"));
       await this.startMainThreadTrackers();
     }
@@ -144,7 +184,9 @@ export class PoseTracker {
   }
 
   async startMainThreadTrackers() {
-    const vision = await FilesetResolver.forVisionTasks(WASM_PATH);
+    const preload = await preloadVisionAssets();
+    const vision = this.preloadedVision || preload.vision || await FilesetResolver.forVisionTasks(WASM_PATH);
+    this.preloadedVision = vision;
     const makePose = (delegate) => PoseLandmarker.createFromOptions(vision, {
       baseOptions: { modelAssetPath: POSE_MODEL, delegate },
       runningMode: "VIDEO",
@@ -167,6 +209,9 @@ export class PoseTracker {
       this.recordMetrics(data.timestamp, performance.now(), this.state, performance.now() - this.inferenceStartedAt);
     } else if (data?.type === "error") {
       this.workerBusy = false;
+      this.workerError = data.message || "Tracking Worker error";
+      this.metrics.workerError = this.workerError;
+      console.warn("[Body Ninja] Tracking Worker frame error.", data.message);
       this.onStatus(t("status.workerInterrupted"));
     }
   }
@@ -251,7 +296,9 @@ export class PoseTracker {
       return;
     }
     this.inferenceStartedAt = performance.now();
-    const poseResult = this.pose.detectForVideo(this.video, timestamp);
+    this.mainFrameContext.clearRect(0, 0, TRACKING_FRAME_WIDTH, TRACKING_FRAME_HEIGHT);
+    this.mainFrameContext.drawImage(this.video, 0, 0, TRACKING_FRAME_WIDTH, TRACKING_FRAME_HEIGHT);
+    const poseResult = this.pose.detectForVideo(this.mainFrameCanvas, timestamp);
     this.state = this.buildState(poseResult?.landmarks || [], width, height, dt);
     this.recordMetrics(timestamp, performance.now(), this.state, performance.now() - this.inferenceStartedAt);
   }
@@ -344,6 +391,7 @@ export class PoseTracker {
       trackingHz: interval > 0 ? 1000 / interval : 0,
       resultAgeMs: Math.max(0, finishedAt - timestamp),
       pipelineAgeMs: Math.max(0, finishedAt - timestamp),
+      workerError: this.workerError || "",
     };
   }
 

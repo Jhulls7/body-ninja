@@ -72,6 +72,7 @@ function resize() {
   canvas.style.height = `${viewport.height}px`;
   game.ctx.setTransform(viewport.dpr, 0, 0, viewport.dpr, 0, 0);
   game.resize(viewport.width, viewport.height);
+  game.setMobileLayout(isMobileDevice());
   updateOrientationHint();
 }
 
@@ -87,7 +88,9 @@ function isMobileDevice() {
 function updateOrientationHint() {
   if (!orientationAlert) return;
   const shouldShow = isMobileDevice() && window.innerHeight > window.innerWidth;
+  const screenState = game && ["MENU", "HELP", "PAUSED", "GAME_OVER", "ROUND_BREAK", "TURN_BREAK"].includes(game.state);
   orientationAlert.classList.toggle("active", shouldShow);
+  orientationAlert.classList.toggle("attention", shouldShow && screenState);
 }
 
 function renderLives(lives) {
@@ -140,7 +143,8 @@ function updateUi(data) {
   gameoverScreen.classList.toggle("active", state === "GAME_OVER");
   roundScreen.classList.toggle("active", state === "ROUND_BREAK");
   turnScreen.classList.toggle("active", state === "TURN_BREAK");
-  hud.classList.toggle("hidden", ["MENU", "HELP"].includes(state));
+  updateOrientationHint();
+  hud.classList.toggle("hidden", ["MENU", "HELP", "GAME_OVER", "ROUND_BREAK", "TURN_BREAK"].includes(state));
   runtimeBadge.classList.toggle("hidden", state === "MENU" || state === "HELP" || state === "GAME_OVER" || state === "ROUND_BREAK" || state === "TURN_BREAK");
   playersHud.classList.toggle("hidden", state === "MENU" || state === "HELP" || state === "GAME_OVER" || state === "ROUND_BREAK" || state === "TURN_BREAK" || state === "PAUSED");
   setProximityWarning(Boolean(data.tooClose));

@@ -2,7 +2,7 @@
 
 :root { color-scheme: dark; font-family: "Oxanium", system-ui, sans-serif; background: #02050d; color: #e8f9ff; font-synthesis: none; }
 * { box-sizing: border-box; }
-html, body, #app { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+html, body, #app { width: 100%; height: 100%; min-height: 100dvh; margin: 0; overflow: hidden; }
 body { background: #02050d; }
 button { font: inherit; color: inherit; cursor: pointer; }
 button:disabled { opacity: .55; cursor: wait; }
@@ -119,6 +119,8 @@ h1 strong { color: #69e7ff; -webkit-text-stroke: 1px #9ff4ff; }
 .fps-inline b { color: #eaffff; font-variant-numeric: tabular-nums; }
 .orientation-alert { position: fixed; top: 18px; left: 50%; z-index: 6; width: min(440px, calc(100vw - 32px)); padding: 0 2px; opacity: 0; pointer-events: none; transform: translate(-50%, -12px); transition: opacity .25s ease, transform .25s ease; }
 .orientation-alert.active { opacity: 1; transform: translate(-50%, 0); }
+.orientation-alert.attention { top: 50%; transform: translate(-50%, -50%); }
+.orientation-alert.attention.active { transform: translate(-50%, -50%); }
 .orientation-alert-card { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-left: 2px solid #6be6ff; background: rgba(3, 14, 23, .84); box-shadow: 0 10px 34px rgba(0, 0, 0, .2); }
 .orientation-mark { display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid rgba(107, 230, 255, .65); color: #6be6ff; font-size: 20px; line-height: 1; }
 .orientation-alert-card b { display: block; color: #dffaff; font-size: 13px; letter-spacing: .1em; }
@@ -141,4 +143,38 @@ h1 strong { color: #69e7ff; -webkit-text-stroke: 1px #9ff4ff; }
 @keyframes orbit-spin { to { transform: rotate(360deg); } }
 @keyframes pulse { 50% { transform: scale(1.35); box-shadow: 0 0 0 14px rgba(107, 230, 255, .03), 0 0 30px #6be6ff; } }
 @keyframes flow-pulse { to { opacity: .55; } }
+@media (orientation: landscape) and (max-height: 600px) {
+  .screen { align-items: flex-start; padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
+  .button, select, input { touch-action: manipulation; }
+  .menu-copy { width: min(680px, calc(100vw - 32px)); padding: 14px 0 30px; }
+  .menu-copy .eyebrow { font-size: 11px; margin-bottom: 10px; }
+  .menu-copy h1 { font-size: clamp(62px, 15vw, 126px); margin-bottom: 20px; }
+  .tagline { font-size: 15px; margin-bottom: 12px; }
+  .intro { font-size: 13px; line-height: 1.45; margin-bottom: 18px; }
+  .menu-actions { gap: 8px; }
+  .menu-actions .button { flex: 0 1 auto; min-height: 46px; padding: 0 16px; font-size: 11px; }
+  .button-primary span { margin-left: 8px; font-size: 14px; }
+  .game-settings { gap: 8px; margin-top: 16px; }
+  .settings-hint { margin-top: 8px; font-size: 10px; }
+  .text-button { margin-top: 14px; font-size: 12px; }
+  .privacy { margin-top: 20px; font-size: 10px; }
+  .distance-tip { font-size: 10px; }
+  .menu-slice-preview { opacity: .14; right: -10vw; top: 36%; }
+  .screen-overlay { align-items: flex-start; }
+  .gameover-card, .pause-card, .round-card, .lost-card { width: min(760px, calc(100vw - 24px)); margin: 12px auto; padding: 18px 22px; }
+  .gameover-card h2, .pause-card h2, .round-card h2, .lost-card h2 { font-size: clamp(36px, 8vw, 66px); margin-bottom: 10px; }
+  .gameover-score-label { font-size: 11px !important; }
+  .gameover-score-label b { font-size: 28px; margin-top: 2px; }
+  .gameover-best { font-size: 11px !important; margin-bottom: 8px; }
+  .score-board { gap: 5px; margin-top: 8px; }
+  .score-row { gap: 7px; padding: 6px 8px; font-size: 10px; }
+  .score-row b { font-size: 12px; }
+  .score-row small { font-size: 9px; }
+  .mini-heart { font-size: 12px; }
+  .gameover-actions, .pause-actions { gap: 8px; margin-top: 14px; }
+  .gameover-actions .button, .pause-actions .button, .round-card > .button { min-height: 42px; padding: 0 14px; font-size: 11px; }
+  .round-next { margin: 12px 0 0; font-size: 10px; }
+}
 @media (max-width: 760px) { .menu-copy { margin: 0 auto; width: min(92vw, 560px); } .menu-slice-preview { opacity: .25; right: -20vw; top: 43%; } .help-grid { grid-template-columns: 1fr; } .hud { top: 16px; left: 16px; right: 16px; gap: 12px; } .hud-block strong { font-size: 20px; } .lives-block { min-width: 160px; } .lives-block strong { gap: 5px; font-size: 34px; } .heart-icon { width: 30px; font-size: 34px; } .hud-center { top: 4px; } .flow-meter { top: 55px; } .players-hud { top: 88px; left: 16px; max-width: calc(100vw - 32px); } .runtime-badge { top: auto; bottom: 18px; right: 16px; } .orientation-alert { top: 12px; } .orientation-alert-card { padding: 9px 11px; } .orientation-alert-card b { font-size: 12px; } .orientation-alert-card small { font-size: 11px; } .intro { font-size: 14px; } .distance-tip { max-width: 290px; line-height: 1.5; } .menu-actions .button { flex: 1 1 210px; } }
+@media (max-width: 900px) { .screen { align-items: flex-start; padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; } .button, select, input { touch-action: manipulation; } .orientation-alert { width: min(470px, calc(100vw - 28px)); } .orientation-alert.attention .orientation-alert-card { padding: 18px 20px; } .orientation-alert.attention .orientation-mark { width: 38px; height: 38px; font-size: 27px; } .orientation-alert.attention .orientation-alert-card b { font-size: 16px; } .orientation-alert.attention .orientation-alert-card small { font-size: 14px; } .menu-copy { margin: 0 auto; width: min(92vw, 560px); } .menu-slice-preview { opacity: .25; right: -20vw; top: 43%; } .gameover-card, .pause-card, .round-card, .lost-card { margin: 16px auto; max-width: calc(100vw - 28px); } .gameover-actions, .pause-actions { flex-wrap: wrap; } .gameover-actions .button, .pause-actions .button { flex: 1 1 180px; } }
+@media (max-width: 900px) and (orientation: landscape) { .menu-copy { width: min(680px, calc(100vw - 32px)); padding: 14px 0 30px; } .menu-copy .eyebrow { font-size: 11px; margin-bottom: 10px; } .menu-copy h1 { font-size: clamp(62px, 15vw, 126px); margin-bottom: 20px; } .tagline { font-size: 15px; margin-bottom: 12px; } .intro { font-size: 13px; line-height: 1.45; margin-bottom: 18px; } .menu-actions { gap: 8px; } .menu-actions .button { flex: 0 1 auto; min-height: 46px; padding: 0 16px; font-size: 11px; } .button-primary span { margin-left: 8px; font-size: 14px; } .game-settings { gap: 8px; margin-top: 16px; } .settings-hint { margin-top: 8px; font-size: 10px; } .text-button { margin-top: 14px; font-size: 12px; } .privacy { margin-top: 20px; font-size: 10px; } .distance-tip { font-size: 10px; } .menu-slice-preview { opacity: .14; right: -10vw; top: 36%; } .gameover-card, .pause-card, .round-card, .lost-card { width: min(760px, calc(100vw - 24px)); margin: 12px auto; padding: 18px 22px; } .gameover-card h2, .pause-card h2, .round-card h2, .lost-card h2 { font-size: clamp(36px, 8vw, 66px); margin-bottom: 10px; } .gameover-score-label { font-size: 11px !important; } .gameover-score-label b { font-size: 28px; margin-top: 2px; } .gameover-best { font-size: 11px !important; margin-bottom: 8px; } .score-board { gap: 5px; margin-top: 8px; } .score-row { gap: 7px; padding: 6px 8px; font-size: 10px; } .score-row b { font-size: 12px; } .score-row small { font-size: 9px; } .mini-heart { font-size: 12px; } .gameover-actions, .pause-actions { gap: 8px; margin-top: 14px; } .gameover-actions .button, .pause-actions .button, .round-card > .button { min-height: 42px; padding: 0 14px; font-size: 11px; } .round-next { margin: 12px 0 0; font-size: 10px; } }

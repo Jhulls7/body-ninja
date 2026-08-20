@@ -28,6 +28,7 @@ export class Game {
     this.state = "MENU";
     this.simulation = false;
     this.cameraMode = false;
+    this.mobileLayout = false;
     this.elapsed = 0;
     this.score = 0;
     this.displayScore = 0;
@@ -69,6 +70,7 @@ export class Game {
   }
 
   resize(width, height) { this.width = width; this.height = height; this.backgroundDirty = true; }
+  setMobileLayout(enabled) { this.mobileLayout = Boolean(enabled); }
   setPointer(x, y) { this.pointer = { x, y }; }
   setCameraMode(enabled) { this.cameraMode = enabled; }
 
@@ -172,7 +174,8 @@ export class Game {
 
   getDifficulty() {
     const curve = clamp(this.elapsed / 150, 0, 1);
-    return { curve, spawnEvery: lerp(0.66, 0.28, curve) * (this.flowMode ? 0.68 : 1), fruitSpeed: lerp(1.0, 1.5, curve), bombChance: 0.055 + curve * 0.08 };
+    const mobileSpeed = this.mobileLayout ? 0.95 : 1;
+    return { curve, spawnEvery: lerp(0.66, 0.28, curve) * (this.flowMode ? 0.68 : 1), fruitSpeed: lerp(1.0, 1.5, curve) * mobileSpeed, bombChance: 0.055 + curve * 0.08 };
   }
 
   update(dt, tracking) {
@@ -320,7 +323,7 @@ export class Game {
     const activePlayer = this.getActivePlayer();
     const rareHeart = !isBomb && activePlayer && activePlayer.lives < MAX_LIVES && specialRoll < 0.008;
     const type = isBomb ? "bomb" : rareHeart ? "heart" : specialRoll < 0.022 ? "golden" : specialRoll < 0.05 ? "time" : randomItem(["apple", "orange", "kiwi", "strawberry"]);
-    const radius = randomBetween(34, 50);
+    const radius = randomBetween(34, 50) * (this.mobileLayout ? 0.9 : 1);
     const x = randomBetween(radius + 20, this.width - radius - 20);
     const targetX = randomBetween(this.width * 0.18, this.width * 0.82);
     const verticalLaunch = randomBetween(900, 1160) * difficulty.fruitSpeed;

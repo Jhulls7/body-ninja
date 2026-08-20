@@ -174,7 +174,7 @@ export class Game {
 
   getDifficulty() {
     const curve = clamp(this.elapsed / 150, 0, 1);
-    const mobileSpeed = this.mobileLayout ? 0.68 : 1;
+    const mobileSpeed = this.mobileLayout ? 0.646 : 1;
     return { curve, spawnEvery: lerp(0.66, 0.28, curve) * (this.flowMode ? 0.68 : 1), fruitSpeed: lerp(1.0, 1.5, curve) * mobileSpeed, bombChance: 0.055 + curve * 0.08 };
   }
 
@@ -323,8 +323,8 @@ export class Game {
     const activePlayer = this.getActivePlayer();
     const rareHeart = !isBomb && activePlayer && activePlayer.lives < MAX_LIVES && specialRoll < 0.008;
     const type = isBomb ? "bomb" : rareHeart ? "heart" : specialRoll < 0.022 ? "golden" : specialRoll < 0.05 ? "time" : randomItem(["apple", "orange", "kiwi", "strawberry"]);
-    const mobileFruitScale = this.mobileLayout ? clamp(this.height / 1100, 0.42, 0.60) * 1.1 : 1;
-    const mobileMotionScale = this.mobileLayout ? 0.68 : 1;
+    const mobileFruitScale = this.mobileLayout ? clamp(this.height / 1100, 0.42, 0.60) * 1.21 : 1;
+    const mobileMotionScale = this.mobileLayout ? 0.646 : 1;
     const radius = randomBetween(34, 50) * mobileFruitScale;
     const x = randomBetween(radius + 20, this.width - radius - 20);
     const targetX = randomBetween(this.width * 0.18, this.width * 0.82);

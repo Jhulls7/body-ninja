@@ -174,7 +174,7 @@ export class Game {
 
   getDifficulty() {
     const curve = clamp(this.elapsed / 150, 0, 1);
-    const mobileSpeed = this.mobileLayout ? 0.95 : 1;
+    const mobileSpeed = this.mobileLayout ? 0.88 : 1;
     return { curve, spawnEvery: lerp(0.66, 0.28, curve) * (this.flowMode ? 0.68 : 1), fruitSpeed: lerp(1.0, 1.5, curve) * mobileSpeed, bombChance: 0.055 + curve * 0.08 };
   }
 
@@ -323,12 +323,14 @@ export class Game {
     const activePlayer = this.getActivePlayer();
     const rareHeart = !isBomb && activePlayer && activePlayer.lives < MAX_LIVES && specialRoll < 0.008;
     const type = isBomb ? "bomb" : rareHeart ? "heart" : specialRoll < 0.022 ? "golden" : specialRoll < 0.05 ? "time" : randomItem(["apple", "orange", "kiwi", "strawberry"]);
-    const radius = randomBetween(34, 50) * (this.mobileLayout ? 0.9 : 1);
+    const mobileFruitScale = this.mobileLayout ? clamp(this.height / 720, 0.56, 0.74) : 1;
+    const mobileMotionScale = this.mobileLayout ? 0.88 : 1;
+    const radius = randomBetween(34, 50) * mobileFruitScale;
     const x = randomBetween(radius + 20, this.width - radius - 20);
     const targetX = randomBetween(this.width * 0.18, this.width * 0.82);
     const verticalLaunch = randomBetween(900, 1160) * difficulty.fruitSpeed;
     const horizontalLaunch = ((targetX - x) * 0.55 + randomBetween(-230, 230)) * difficulty.fruitSpeed;
-    this.fruits.push({ id: `${Date.now()}-${Math.random()}`, type, isBomb, radius, position: { x, y: this.height + radius * 0.3 }, velocity: { x: horizontalLaunch, y: -verticalLaunch }, gravity: randomBetween(760, 930), rotation: randomBetween(-Math.PI, Math.PI), spin: randomBetween(-3.8, 3.8), cut: false, dead: false, life: 1, wobble: Math.random() * 10, wobbleSpeed: randomBetween(4, 8), drift: randomBetween(-150, 150) });
+    this.fruits.push({ id: `${Date.now()}-${Math.random()}`, type, isBomb, radius, position: { x, y: this.height + radius * 0.3 }, velocity: { x: horizontalLaunch, y: -verticalLaunch }, gravity: randomBetween(760, 930) * mobileMotionScale, rotation: randomBetween(-Math.PI, Math.PI), spin: randomBetween(-3.8, 3.8), cut: false, dead: false, life: 1, wobble: Math.random() * 10, wobbleSpeed: randomBetween(4, 8), drift: randomBetween(-150, 150) * mobileMotionScale });
   }
 
   updateFruits(dt, difficulty) {
